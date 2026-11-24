@@ -1,8 +1,6 @@
-name: Provisionar Infraestructura (Terraform)
-
+﻿name: Provisionar Infraestructura (Terraform)
 on:
   workflow_dispatch:
-
 jobs:
   terraform-apply:
     runs-on: ubuntu-latest
@@ -12,25 +10,17 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: hashicorp/setup-terraform@v3
-
-      - name: Configurar credenciales AWS
-        uses: aws-actions/configure-aws-credentials@v4
+      - uses: aws-actions/configure-aws-credentials@v4
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-session-token: ${{ secrets.AWS_SESSION_TOKEN }}
           aws-region: us-east-1
-
-      - name: Terraform Init
-        run: terraform init -backend-config="bucket=${{ secrets.TF_STATE_BUCKET }}"
-
-      - name: Terraform Apply
-        env:
+      - run: terraform init -backend-config="bucket=${{ secrets.TF_STATE_BUCKET }}"
+      - env:
           TF_VAR_public_key: ${{ secrets.EC2_PUBLIC_KEY }}
           TF_VAR_db_password: ${{ secrets.DB_PASSWORD }}
           TF_VAR_github_repo_url: "https://github.com/${{ github.repository }}.git"
           TF_VAR_alert_email: ${{ secrets.ALERT_EMAIL }}
         run: terraform apply -auto-approve
-
-      - name: Mostrar IP Publica
-        run: terraform output
+      - run: terraform output

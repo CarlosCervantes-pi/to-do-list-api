@@ -1,24 +1,19 @@
-name: Monitoreo Health Check
-
+﻿name: Monitoreo Health Check
 on:
   schedule:
     - cron: '*/5 * * * *'
   workflow_dispatch:
-
 jobs:
   check-health:
     runs-on: ubuntu-latest
     steps:
-      - name: Configurar credenciales AWS
-        uses: aws-actions/configure-aws-credentials@v4
+      - uses: aws-actions/configure-aws-credentials@v4
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-session-token: ${{ secrets.AWS_SESSION_TOKEN }}
           aws-region: us-east-1
-
-      - name: Consultar /health en EC2
-        run: |
+      - run: |
           IP=$(aws ec2 describe-instances \
             --filters "Name=tag:Name,Values=todo-list-app-server" "Name=instance-state-name,Values=running" \
             --query "Reservations[0].Instances[0].PublicIpAddress" \
