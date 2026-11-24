@@ -1,0 +1,23 @@
+name: CD - Crear Release
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Empaquetar repositorio en ZIP
+        run: zip -r app-${{ github.ref_name }}.zip src/
+
+      - name: Publicar Release en GitHub
+        uses: softprops/action-gh-release@v2
+        with:
+          files: app-${{ github.ref_name }}.zip

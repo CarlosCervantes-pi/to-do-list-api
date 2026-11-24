@@ -1,0 +1,44 @@
+name: CD - Deploy a EC2
+
+on:
+  release:
+    types: [published]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Configurar credenciales AWS
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-session-token: ${{ secrets.AWS_SESSION_TOKEN }}
+          aws-region: us-east-1
+
+      - name: Obtener IP de EC2 desde AWS
+        id: get-ip
+        run: |
+          IP=$(aws ec2 describe-instances \
+            --filters "Name=tag:Name,Values=todo-list-app-server" "Name=instance-state-name,Values=running" \
+            --query "Reservations[0].Instances[0].PublicIpAddress" \
+            --output text)
+          echo "ec2_ip=$IP" >> $GITHUB_OUTPUT
+
+      - name: Desplegar artefacto via SSH
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ steps.get-ip.outputs.ec2_ip }}
+          username: ubuntu
+          key: ${{ secrets.EC2_PRIVATE_KEY }}
+          script: |
+            TAG="${{ github.event.release.tag_name }}"
+            URL="https://github.com/${{ github.repository }}/releases/download/${TAG}/app-${TAG}.zip"
+            sudo curl -L "$URL" -o /tmp/app.zip
+            sudo unzip -o /tmp/app.zip -d /opt/todo-app/
+            sudo /opt/todo-app/venv/bin/pip install -r /opt/todo-app/src/requirements.txt
+            sudo sed -i "s/Environment=\"APP_VERSION=.*\"/Environment=\"APP_VERSION=${TAG}\"/" /etc/systemd/system/todo-api.service
+            sudo systemctl daemon-reload
+            sudo systemctl restart todo-api
+            sleep 3
+            curl -f http://localhost:8000/version

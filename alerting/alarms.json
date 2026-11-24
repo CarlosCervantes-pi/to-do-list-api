@@ -1,0 +1,32 @@
+[
+  {
+    "AlarmName": "ToDo-HighCPUUtilization",
+    "Namespace": "AWS/EC2",
+    "MetricName": "CPUUtilization",
+    "Statistic": "Average",
+    "Period": 60,
+    "EvaluationPeriods": 2,
+    "Threshold": 80,
+    "ComparisonOperator": "GreaterThanThreshold"
+  },
+  {
+    "AlarmName": "ToDo-RDSConnectionErrors",
+    "Namespace": "ToDoListApp",
+    "MetricName": "DBConnectionErrors",
+    "Statistic": "Sum",
+    "Period": 60,
+    "EvaluationPeriods": 1,
+    "Threshold": 1,
+    "ComparisonOperator": "GreaterThanOrEqualToThreshold"
+  },
+  {
+    "AlarmName": "ToDo-HighTaskLatency",
+    "Namespace": "ToDoListApp",
+    "MetricName": "TaskOperationLatency",
+    "Statistic": "Average",
+    "Period": 60,
+    "EvaluationPeriods": 2,
+    "Threshold": 500,
+    "ComparisonOperator": "GreaterThanThreshold"
+  }
+]

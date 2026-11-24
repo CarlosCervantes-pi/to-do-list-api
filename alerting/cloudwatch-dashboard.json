@@ -1,0 +1,46 @@
+{
+  "widgets": [
+    {
+      "type": "metric",
+      "x": 0,
+      "y": 0,
+      "width": 8,
+      "height": 6,
+      "properties": {
+        "metrics": [["AWS/EC2", "CPUUtilization", "InstanceId", "<INSTANCE_ID>"]],
+        "period": 60,
+        "stat": "Average",
+        "region": "us-east-1",
+        "title": "EC2 CPU Utilization (%)"
+      }
+    },
+    {
+      "type": "metric",
+      "x": 8,
+      "y": 0,
+      "width": 8,
+      "height": 6,
+      "properties": {
+        "metrics": [["ToDoListApp", "DBConnectionErrors"]],
+        "period": 60,
+        "stat": "Sum",
+        "region": "us-east-1",
+        "title": "Errores de Conexion RDS (Count)"
+      }
+    },
+    {
+      "type": "metric",
+      "x": 16,
+      "y": 0,
+      "width": 8,
+      "height": 6,
+      "properties": {
+        "metrics": [["ToDoListApp", "TaskOperationLatency"]],
+        "period": 60,
+        "stat": "Average",
+        "region": "us-east-1",
+        "title": "Latencia Operaciones Tareas (ms)"
+      }
+    }
+  ]
+}
